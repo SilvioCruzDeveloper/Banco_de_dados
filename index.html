@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CRUD com MySQL, PHP e JavaScript</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <h2>Usuários</h2>
+    <ul id="usuarios-lista"></ul>
+    <form id="formulario">
+      <input type="text" id="nome" placeholder="Nome" />
+      <input type="email" id="email" placeholder="E-mail" />
+      <button type="submit">Adicionar</button>
+    </form>
+
+    <script>
+      const formulario = document.getElementById("formulario");
+      const nomeInput = document.getElementById("nome");
+      const emailInput = document.getElementById("email");
+      const usuariosLista = document.getElementById("usuarios-lista");
+
+      formulario.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const nome = nomeInput.value;
+        const email = emailInput.value;
+
+        await fetch("usuarios.php", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: `nome=${nome}&email=${email}`,
+        });
+
+        carregarUsuarios();
+        nomeInput.value = "";
+        emailInput.value = "";
+      });
+
+      async function carregarUsuarios() {
+        const response = await fetch("usuarios.php");
+        const usuarios = await response.json();
+
+        usuariosLista.innerHTML = "";
+        usuarios.forEach((usuario) => {
+          const li = document.createElement("li");
+          li.textContent = `${usuario.nome} - ${usuario.email}`;
+          usuariosLista.appendChild(li);
+        });
+      }
+
+      document.addEventListener("DOMContentLoaded", carregarUsuarios);
+    </script>
+  </body>
+</html>
